@@ -16,14 +16,19 @@ Improvements: Instead of needing to log into each account, and sorting/added up 
 ### Information Inputs
 
 Inputs: User inputs would include a date range, a financial instituion, or a category of spending that you want to analyze (or all               categories!)
+        
         Data inputs include transaction data from user's financial institutions such as credit card companies and banks.
+        
         This information will come from Buxfer.com, which is a website that you can link all your financial institution accounts to. You         can also upload statements individually to analyze.
+        
         All information will be dollar amounts, as expenses are all going to be in USD.
+        
         There may be some initial setup required, such as logging into your bank account, or putting in a statement.
 
 ### Information Outputs
 
 Outputs:Outputs would be in the format of US dollars and strings (such as the category of spending)
+        
         It will take data, most likely use a sum function, or a division function (to find % of budget left) and spit out a relevant             number.
 
 ## Technology Requirements
