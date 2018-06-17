@@ -11,11 +11,11 @@ Improvements: Instead of needing to log into each account, and sorting/added up 
 
 ### Information Inputs
 
-Inputs: User inputs would include a date range, a financial instituion, or a category of spending that you want to analyze (or all categories!)
+Inputs: User inputs would include a date range, a financial instituion, or a category of spending that you want to analyze (or all               categories!)
         Data inputs include transaction data from user's financial institutions such as credit card companies and banks.
-        This information will come from Buxfer.com, which is a website that you can link all your financial institution accounts to. You can also upload statements individually to analyze.
+        This information will come from Buxfer.com, which is a website that you can link all your financial institution accounts to. You         can also upload statements individually to analyze.
         All information will be dollar amounts, as expenses are all going to be in USD.
-
+        There may be some initial setup required, such as logging into your bank account, or putting in a statement.
 ### Information Outputs
 
 Outputs:Outputs would be in the format of US dollars and strings (such as the category of spending)
@@ -32,9 +32,12 @@ I have not looked deep into the documentatin nor have I tried using them, but a 
 ### Python Package Requirements
 
 Third party Python package:
-The app will use the Requests package, the Pytest package and 
+The Requests package will be used to to grab information from the website.
+The Pytest package may be used to test the program.
+pip install requests
+pip install Pytest
 
 
 ### Hardware Requirements
 
-todo: describe hardware requirements, if any (see proposal instructions)
+I will be running the program on my own local computer, as I do not know how to do it on a public server yet.
