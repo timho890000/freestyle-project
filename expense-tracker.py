@@ -19,6 +19,11 @@ def list_transactions(url):
     for d in transaction_data:
         return transaction_data
 
+def return_list(filename):
+    with open(filename, 'r') as f:
+        reader = csv.reader(f)
+        my_list = list(reader)
+    return my_list[0]
 
 #def group_transactions
 
@@ -29,7 +34,7 @@ def list_transactions(url):
 def run():
     username = "timho890000@yahoo.com"#input("Please enter your email address: ")
     password = "timmy2co"#input("Please enter your password: ")
-    categories = ["food","expenses","shopping","income","other"]
+    categories = return_list("db/categories.csv")
     base = "https://www.buxfer.com/api";
     login_url  = base + "/login?userid=" + username + "&password=" + password
     response = requests.get(login_url)
@@ -60,19 +65,62 @@ def run():
     shopping_payments = []
     other_payments = []
     income = [] #list of all positive transactions
-    food_key_words = ["cafe","market","joju","dumpling","qdoba","chipotle","pho"]
-    expense_key_words = []
-    shopping_key_words = []
-    other_key_words = []
+
+
+
+    food_key_words = return_list("db/food.csv")
+    expense_key_words = return_list("db/expense.csv")
+    shopping_key_words = return_list("db/shopping.csv")
+    other_key_words = return_list("db/other.csv")
+    food_total=0
+    expense_total=0
+    shopping_total=0
+    other_total=0
+    income_total=0
+
 
     for t in transactions:
         for f in food_key_words:
             if(f.upper() in t["description"].upper()):
                 food_payments.append(t)
+                food_total= food_total+t["amount"]
                 #transactions.remove(t) this will screw it up. find a way to remove.
                 break
-    print("This is what you spent on food")
+    print("You spend a total of "+str(food_total)+" on food. Here is a list of the transactions")
     for i in food_payments:
+        print("Date: "+i["normalizedDate"]+" Description: "+i["description"]+" Amount: "+str(i["amount"]))
+
+    for t in transactions:
+        for f in expense_key_words:
+            if(f.upper() in t["description"].upper()):
+                expense_payments.append(t)
+                expense_total= expense_total+t["amount"]
+                #transactions.remove(t) this will screw it up. find a way to remove.
+                break
+    print("You spend a total of "+str(expense_total)+" on expense. Here is a list of the transactions")
+    for i in expense_payments:
+        print("Date: "+i["normalizedDate"]+" Description: "+i["description"]+" Amount: "+str(i["amount"]))
+
+    for t in transactions:
+        for f in shopping_key_words:
+            if(f.upper() in t["description"].upper()):
+                shopping_payments.append(t)
+                shopping_total= shopping_total+t["amount"]
+                #transactions.remove(t) this will screw it up. find a way to remove.
+                break
+    print("You spend a total of "+str(shopping_total)+" on shopping. Here is a list of the transactions")
+    for i in shopping_payments:
+        print("Date: "+i["normalizedDate"]+" Description: "+i["description"]+" Amount: "+str(i["amount"]))
+
+    for t in transactions:
+        for f in other_key_words:
+            if(f.upper() in t["description"].upper()):
+                other_payments.append(t)
+                other_total= other_total+t["amount"]
+                #transactions.remove(t) this will screw it up. find a way to remove.
+                break
+    print("You spend a total of "+str(other_total)+" on other. Here is a list of the transactions")
+    for i in other_payments:
         print("Date: "+i["normalizedDate"]+" Description: "+i["description"]+" Amount: "+str(i["amount"]))
 
 
@@ -84,8 +132,6 @@ def run():
     for i in income:
         print("Date: "+i["normalizedDate"]+" Description: "+i["description"]+" Amount: "+str(i["amount"]))
 
-    for t in transactions:
-        print (t)
 
 
 if __name__ == "__main__": ## this will run only when this program is invoked from the command line. So if we run the reset function, it wont run the whole thing
