@@ -42,7 +42,7 @@ def include_transactions(transactions,key_words):
                     included_transactions.append(t)
     return included_transactions
 
-def summarize(categories, transactions):
+def summarize(categories, transactions,budgets):
     #this creates a list of lists of key words for each category.
     #category_key_words[0] would be key words for the first category and so on so forth.
     category_key_words = []
@@ -62,7 +62,7 @@ def summarize(categories, transactions):
                 add_other = False
         if(add_other):
             category_payments[1].append(t)
-
+    print("Please note that transactions without key words are categorized as 'other' ")
     count = -1
     for c in reversed(category_payments):
         print("---------")
@@ -71,22 +71,22 @@ def summarize(categories, transactions):
         sum=0
         for i in c:
             sum = sum-i["expenseAmount"]
-            print(i["normalizedDate"]+": "+i["description"]+": "+"(${0:.2f})".format(float((-i["expenseAmount"]))))
-        print("Please note that transactions without key words are categorized as 'other' ")
+            print(i["normalizedDate"]+": "+i["description"]+": "+"(${0:,.2f})".format(float((-i["expenseAmount"]))))
+
         print("---------")
         print("---------")
         if(sum<0):
-            print("The total amount spend on "+ categories[count].title() + " items is " +"(${0:.2f})".format(float(sum)))
-            if(sum<-100):
+            print("The total amount spend on "+ categories[count].title() + " items is " +"(${0:,.2f})".format(float(sum)))
+            if(sum<float(budgets[categories[count].lower()])):
                 print("You are spending way too much in this category! Cut down!")
             else:
-                print("You are thrifty when it comes to "+categories[count]+". Feel free to spend more =]")
+                print("You are meeting your goal when it comes to comes to "+categories[count]+". Feel free to spend more but don't go over the budget!")
             print()
         elif sum==0:
             print("You have no activity in the "+categories[count].title()+" category")
             print()
         else:
-            print("Your income/refunds for the month is "+ "(${0:.2f})".format(float(sum)))
+            print("Your income/refunds for the month is "+ "(${0:,.2f})".format(float(sum)))
             print()
         count+=-1
 
@@ -115,6 +115,13 @@ def reset():
     for c in categories:
         default_list = return_list("db default/"+c+" default.csv")
         write_list_to_file(c+".csv",default_list)
+
+def set_budget(categories,budgets):
+    for c in categories:
+        budgets[c] = -float(input("What is your budget for "+ c))
+    return budgets
+
+
 
 
 #def group_transactions
@@ -147,6 +154,7 @@ def run():
     listed_data = [] #this is a list of all the transactions (which are each a dictionary)
     for t in transactions:
         listed_data.append({"Date":t["normalizedDate"],"Description":t["description"],"Amount":-t["expenseAmount"]})
+    budgets = {}
     while True:
         try:
             categories = return_list("db/categories.csv")
@@ -154,13 +162,25 @@ def run():
             print("Your list of categories is missing. Let me fix that for you =]")
             reset()
             categories = return_list("db/categories.csv")
+
+        # emptoy dictionaries evaluate to false. https://stackoverflow.com/questions/23177439/python-checking-if-a-dictionary-is-empty-doesnt-seem-to-work
+
+        if bool(budgets)==False:
+            for c in categories:
+                budgets[c] = 100
+
         print("--------------------------------------------------")
-        print("Here are the current categories of your expenses, along with key words that identify transactions to be in that category")
+        print("Here are the current categories of your expenses, along with key words that identify transactions to be in that category, and your budget")
         print("--------------------------------------------------")
         try:
             for c in categories:
                 print(c.title()+":")
-                print(return_list("db/"+c+".csv"))
+                print("Key words: "+ str(return_list("db/"+c+".csv")))
+                if(c == "income"):
+                    print("No budget. This should be as high as possible!")
+                else:
+                    print("Budget: "+"(${0:,.2f})".format(float(budgets[c])))
+                print("--------------------------------------------------")
         except:
             print("You don't have a list for this category. Let me reset the defaults for you")
             reset()
@@ -173,13 +193,18 @@ def run():
             --------- | ------------------
             Category  | Adds a category to sort your expenses by
             Key Word  | Adds a key word to a specific category
-            ?Budget   | Sets a budget for a category
+            Budget    | Sets a budget for a category
             Summarize | Summarizes your expenses
             Reset     | Resets to default key_words and categories
+            Finish    | Exit out of the program
             """)
         action = input("Please select an operation: ").title()
-        if (action == "Summarize"):
-            summarize(categories,transactions)
+        if action not in ["Category","Key Word","Budget","Summarize","Reset","Finish"]:
+            print("This is not one of the actions.")
+            print("Please enter another action.")
+            continue
+        elif (action == "Summarize"):
+            summarize(categories,transactions,budgets)
         elif action == "Category":
             new_category = input("Please input new category:  ").lower()
             if new_category in categories:
@@ -195,6 +220,8 @@ def run():
                 else:
                     new_key_words.append(key_word)
             write_list_to_file(new_category+".csv", new_key_words)
+
+            budgets[new_category] = input("What is your budget for " + new_category+"? ")
         elif action == "Key Word":
             category = input("Which category would you like to add to?").lower()
             if(category not in categories):
@@ -220,6 +247,11 @@ def run():
             write_list_to_file(category+".csv",current_key_words)
         elif action == "Reset":
             reset()
+        elif action == "Budget":
+            budgets = set_budget(categories,budgets)
+        elif action == "Finish":
+            print("Thank you for using our application!")
+            exit()
 
 
 
