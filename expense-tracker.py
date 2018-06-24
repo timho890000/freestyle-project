@@ -2,6 +2,7 @@ import csv
 import os
 import requests
 import json
+import os, shutil
 
 def show_account(url):
     account = requests.get(url)
@@ -96,6 +97,26 @@ def write_list_to_file(filename, list):
         writer = csv.writer(csv_file)
         writer.writerow(list)
 
+def reset():
+    print("RESETTING DEFAULTS")
+
+    folder = "db"
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except Exception as e:
+            print(e)
+
+    categories = return_list("db default/categories default.csv")
+    write_list_to_file("categories.csv",categories)
+    for c in categories:
+        default_list = return_list("db default/"+c+" default.csv")
+        write_list_to_file(c+".csv",default_list)
+
+
 #def group_transactions
 
 #def matching_product(product_identifier,categories):
@@ -107,23 +128,15 @@ def run():
     username = "timho890000@yahoo.com"#input("Please enter your email address: ")
     password = "timmy2co"#input("Please enter your password: ")
     #read the available categories (this is a list)
-    categories = return_list("db/categories.csv")
+
+
     #retrieve the token for your account's data
     base = "https://www.buxfer.com/api";
     login_url  = base + "/login?userid=" + username + "&password=" + password
     response = requests.get(login_url)
     response_body = json.loads(response.text)
     token = response_body["response"]["token"] # token is used to get information
-    print("--------------------------------------------------")
-    print("Welcome to the expense tracking app!")
-    print("--------------------------------------------------")
-    print("Here are the current categories of your expenses, along with key words that identify transactions to be in that category")
-    print("--------------------------------------------------")
-    for c in categories:
-        print(c.title()+":")
-        print(return_list("db/"+c+".csv"))
-    print("--------------------------------------------------")
-    print()
+
     start_date = "2018-05-01"# input("What start date would you like to analyze from? (YYYY-MM-DD)")
     end_date = "2018-05-31"#input("What end date would you like to analyze to?(YYYY-MM-DD)")
     account_url =  base + "/accounts?token=" + token #url to get account(s)
@@ -135,6 +148,25 @@ def run():
     for t in transactions:
         listed_data.append({"Date":t["normalizedDate"],"Description":t["description"],"Amount":-t["expenseAmount"]})
     while True:
+        try:
+            categories = return_list("db/categories.csv")
+        except:
+            print("Your list of categories is missing. Let me fix that for you =]")
+            reset()
+            categories = return_list("db/categories.csv")
+        print("--------------------------------------------------")
+        print("Here are the current categories of your expenses, along with key words that identify transactions to be in that category")
+        print("--------------------------------------------------")
+        try:
+            for c in categories:
+                print(c.title()+":")
+                print(return_list("db/"+c+".csv"))
+        except:
+            print("You don't have a list for this category. Let me reset the defaults for you")
+            reset()
+            continue
+        print("--------------------------------------------------")
+        print()
         print(f"""
         Please select from the following:
             Operation | Description
@@ -143,6 +175,7 @@ def run():
             Key Word  | Adds a key word to a specific category
             ?Budget   | Sets a budget for a category
             Summarize | Summarizes your expenses
+            Reset     | Resets to default key_words and categories
             """)
         action = input("Please select an operation: ").title()
         if (action == "Summarize"):
@@ -167,6 +200,12 @@ def run():
             if(category not in categories):
                 print("This category doesnt exist. Please create the category!")
                 continue
+            elif category == "other":
+                print("There is no need to add a key_word to other as all remaining transactions will go into this group.")
+                continue
+            elif category == "income":
+                print("There is no need to add a key_word to income as all positive amounts will go into this group.")
+                continue
             print("Here are the current key words for "+category)
             current_key_words = return_list("db/"+category+".csv")
             print(current_key_words)
@@ -179,6 +218,8 @@ def run():
             print("Here are the current key words for "+category)
             print(current_key_words)
             write_list_to_file(category+".csv",current_key_words)
+        elif action == "Reset":
+            reset()
 
 
 
