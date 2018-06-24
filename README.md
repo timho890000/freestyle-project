@@ -10,11 +10,14 @@ First you must login. Then you need to provide a date range in the correct forma
 
 There is a limited amount of default categories, along with default key words in your transactions that would group the certain transaction into a category. The default budget for each category is $1000 With the functions of the app, you can create a new category, add key words to certain categories, and set budgets. If you want to reset back to default, just type "reset".
 
+Everyone's spending habits are different, so it is important to initially set categories and key words to your habits, otherwise most items will just be grouped into "other". You can just type summary to see a list of your transactions, and run the program again to add key words/categories.
+
 
 ## Summarize
 When you summarize, it will group your transactions in that date range based on the key words in a specific category.
 All positive amounts will go into "income" as these include income/refunds.
 Any transactions that do not have key words in them will be grouped as "other". You can always just add a key word to group those transactions.
+
 
 
 
