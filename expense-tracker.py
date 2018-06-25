@@ -148,7 +148,6 @@ def run():
     account_url =  base + "/accounts?token=" + token #url to get account(s)
     account = show_account(account_url)
     transactions_url =  base + "/transactions?token=" + token +"&startDate="+start_date+"&endDate="+end_date #url to get transactions
-    print(transactions_url)
     transactions = list_transactions(transactions_url) #a list of all the transactions
     listed_data = [] #this is a list of all the transactions (which are each a dictionary)
     for t in transactions:
