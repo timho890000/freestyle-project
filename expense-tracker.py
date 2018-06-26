@@ -3,7 +3,7 @@ import os
 import requests
 import json
 import os, shutil
-
+import datetime
 def show_account(url):
     account = requests.get(url)
     account_body = json.loads(account.text)
@@ -11,6 +11,19 @@ def show_account(url):
     account_info = data["accounts"][0]
     print("Here is a summary of your spending in the account: "+account_info["name"])
     return account_info
+
+#https://stackoverflow.com/questions/16870663/how-do-i-validate-a-date-string-format-in-python
+def input_date(date_text):
+    while True:
+        date = input(date_text)
+        print(date)
+        try:
+            datetime.datetime.strptime(date, '%Y-%m-%d')
+            break
+        except:
+            print("Incorrect data format, should be YYYY-MM-DD")
+    return date
+
 
 def list_transactions(url):
     transactions = requests.get(url)
@@ -132,9 +145,10 @@ def set_budget(categories,budgets):
 
 def run():
     #enter login information
-    username = input("Please enter your email address: ")
-    password = input("Please enter your password: ")
-
+    #username = input("Please enter your email address: ")
+    #password = input("Please enter your password: ")
+    username = "timho890000@yahoo.com"
+    password = "timmy2co"
 
     #retrieve the token for your account's data
     base = "https://www.buxfer.com/api";
@@ -143,8 +157,9 @@ def run():
     response_body = json.loads(response.text)
     token = response_body["response"]["token"] # token is used to get information
 
-    start_date = input("What start date would you like to analyze from? (YYYY-MM-DD)")
-    end_date = input("What end date would you like to analyze to?(YYYY-MM-DD)")
+    start_date = input_date("What start date would you like to analyze from? (YYYY-MM-DD)")
+    end_date = input_date("What end date would you like to analyze to?(YYYY-MM-DD)")
+
     account_url =  base + "/accounts?token=" + token #url to get account(s)
     account = show_account(account_url)
     transactions_url =  base + "/transactions?token=" + token +"&startDate="+start_date+"&endDate="+end_date #url to get transactions
