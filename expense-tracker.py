@@ -145,11 +145,9 @@ def set_budget(categories,budgets):
 
 def run():
     #enter login information
-    #username = input("Please enter your email address: ")
-    #password = input("Please enter your password: ")
-    username = "timho890000@yahoo.com"
-    password = "timmy2co"
-
+    username = input("Please enter your email address: ")
+    password = input("Please enter your password: ")
+    
     #retrieve the token for your account's data
     base = "https://www.buxfer.com/api";
     login_url  = base + "/login?userid=" + username + "&password=" + password
